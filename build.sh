@@ -47,7 +47,7 @@ pushd Python-2.7
 # enable zlib
 perl -i -pe 's@^#( *zlib)@$1@g' Modules/Setup
 # compile
-./configure --prefix=/opt/cloudera/parcels/python2.7
+./configure --prefix=$INSTALL_DIR
 make
 sudo make install
 # move the compiled contents to staing dir
