@@ -22,8 +22,9 @@ then
   echo "Intall dir $INSTALL_DIR already exits, exiting"
   exit 1
 fi
-touch $INSTALL_DIR/.write_test
-rm -f $INSTALL_DIR/.write_test
+sudo rm -rf $INSTALL_DIR
+sudo mkdir $INSTALL_DIR
+sudo chown $USER $INSTALL_DIR
 if [[ ! -f $CM_EXT/validator/target/validator.jar ]]
 then
   echo "CM Ext $CM_EXT does not exist, exiting"
@@ -59,6 +60,9 @@ download_package() {
     fi
     popd
   fi
+  pushd $BUILD_DIR
+  tar -zxf $DOWNLAOD_DIR/$name
+  popd
 }
 build_package() {
   if [[ -z "$1" ]] || [[ ! -d "$1" ]]
@@ -66,7 +70,7 @@ build_package() {
     echo "ERROR: Invalid package directory '$1'"
     exit 1
   fi
-  pushd $1
+  pushd $BUILD_DIR/$1
   $INSTALL_DIR/bin/python setup.py build
   $INSTALL_DIR/bin/python setup.py install --prefix=$INSTALL_DIR
   popd
@@ -168,7 +172,7 @@ done
 mv $INSTALL_DIR/* $stagingDir/
 rmdir $INSTALL_DIR
 # ensure everything is owned by root in parcel
-chown -R root:root $stagingDir/
+sudo chown -R root:root $stagingDir/
 popd
 # validate the parcel
 java -jar $CM_EXT/validator/target/validator.jar -d $name/
