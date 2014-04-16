@@ -91,7 +91,7 @@ fi
 for dep in ${NATIVE_DEPS[@]}
 do
   # FIX test
-  if ! yum info $dep
+  if ! rpm -qi $dep
   then
     echo "WARN: Dependency $dep is not installed. Compilation will likely fail."
     echo "WARN: Please run 'yum install ${NATIVE_DEPS[@]}"
