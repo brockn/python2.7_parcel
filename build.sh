@@ -1,7 +1,6 @@
 #!/bin/bash
 # exit on any error
 set -e
-set -x
 # where to find cm tools
 CM_EXT=${CM_EXT:-/opt/local/cm_ext/}
 # http accessible dir to install parcels
@@ -15,7 +14,7 @@ TABLEAU_PACKAGE=${TABLEAU_PACKAGE:-$DOWNLOAD_DIR/TDE-API-Python-Linux-64Bit.gz}
 # OS this parcel supports
 OS=el6
 NATIVE_DEPS=(gcc zlib-devel readline-devel gcc-c++ openssl-devel tcl-devel tk-devel \
-  gdbm-devel db4-devel blas-devel lapack-devel libpng-devel)
+  gdbm-devel db4-devel atlas-devel libpng-devel)
 PYTHON_DEP_NAMES=(numpy dateutil pandas scipy matplotlib pyflakes statsmodels \
   dataextract)
 # version, note that we may version the 2.7.5 python install ourselves (enable/disable modules)
@@ -69,6 +68,11 @@ download_build() {
   build_package "$1"
 }
 # pre-build checks
+if [[ ! -w $DOWNLOAD_DIR ]]
+then
+  echo "Download dir $DOWNLOAD_DIR does not exist or is not writable, exiting"
+  exit 1
+fi
 if [[ -d $INSTALL_DIR ]]
 then
   echo "Intall dir $INSTALL_DIR already exits, exiting"
@@ -110,6 +114,8 @@ do
   fi
 done
 
+# turn on debug statements
+set -x
 sudo rm -rf $BUILD_DIR
 mkdir -p $stagingDir
 
