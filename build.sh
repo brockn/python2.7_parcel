@@ -14,9 +14,9 @@ TABLEAU_PACKAGE=${TABLEAU_PACKAGE:-$DOWNLOAD_DIR/TDE-API-Python-Linux-64Bit.gz}
 # OS this parcel supports
 OS=el6
 NATIVE_DEPS=(gcc zlib-devel readline-devel gcc-c++ openssl-devel tcl-devel tk-devel \
-  gdbm-devel db4-devel atlas-devel libpng-devel)
+  gdbm-devel db4-devel atlas-devel libpng-devel gcc-gfortran)
 PYTHON_DEP_NAMES=(numpy dateutil pandas scipy matplotlib pyflakes statsmodels \
-  dataextract)
+  dataextract sklearn)
 # version, note that we may version the 2.7.5 python install ourselves (enable/disable modules)
 version=2.7.5.$(date +%Y%m%d.%H%M)
 # name of pracel
@@ -24,6 +24,17 @@ parcelName=python2.7-$version
 # dir we will tar to make the parcel
 stagingDir=$BUILD_DIR/$parcelName
 
+extract_tar() {
+  name=$1
+  if [[ -z $name ]]
+  then
+    echo "ERROR: invalid tar name"
+    exit 1
+  fi
+  pushd $BUILD_DIR
+  tar -zxf $DOWNLOAD_DIR/$name
+  popd
+}
 download_package() {
   if [[ -z "$1" ]]
   then
@@ -42,9 +53,11 @@ download_package() {
     fi
     popd
   fi
-  pushd $BUILD_DIR
-  tar -zxf $DOWNLOAD_DIR/$name
-  popd
+}
+download_extract() {
+  download_package "$1"
+  local name=$(basename $1)
+  extract_tar "$name"
 }
 build_package() {
   if [[ -z "$1" ]] || [[ ! -d "$BUILD_DIR/$1" ]]
@@ -64,7 +77,7 @@ download_build() {
     echo "ERROR: Expected two args, but got '$1' and '$2'"
     exit 1
   fi
-  download_package "$2"
+  download_extract "$2"
   build_package "$1"
 }
 # pre-build checks
@@ -133,7 +146,7 @@ perl -i -pe "s@%OS%@$OS@g" $stagingDir/meta/parcel.json
 #####################
 cd $BUILD_DIR
 # download python 2.7.5
-download_package https://www.python.org/ftp/python/2.7/Python-2.7.tgz
+download_extract "https://www.python.org/ftp/python/2.7/Python-2.7.tgz"
 pushd Python-2.7
 patch -p1 < $SRC_DIR/src/main/patch/Python-2.7.patch
 # compile
@@ -144,11 +157,12 @@ make install
 # steps ordered based on dependencies
 download_build "numpy-1.8.1" "http://iweb.dl.sourceforge.net/project/numpy/NumPy/1.8.1/numpy-1.8.1.tar.gz"
 # setuptools
-wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | $INSTALL_DIR/bin/python
+download_build "setuptools-3.4.4" "https://pypi.python.org/packages/source/s/setuptools/setuptools-3.4.4.tar.gz"
 download_build "python-dateutil-1.5" "https://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz"
 download_build "pandas-0.13.0" "https://pypi.python.org/packages/source/p/pandas/pandas-0.13.0.tar.gz"
 download_build "scipy-0.13.3" "http://iweb.dl.sourceforge.net/project/scipy/scipy/0.13.3/scipy-0.13.3.tar.gz"
 download_build "matplotlib-1.3.1" "http://softlayer-dal.dl.sourceforge.net/project/matplotlib/matplotlib/matplotlib-1.3.1/matplotlib-1.3.1.tar.gz"
+download_build "scikit-learn-0.14.1" "https://pypi.python.org/packages/source/s/scikit-learn/scikit-learn-0.14.1.tar.gz"
 download_build "pyflakes-0.8.1" "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-0.8.1.tar.gz"
 $INSTALL_DIR/bin/easy_install patsy
 download_build "statsmodels-0.5.0" "https://pypi.python.org/packages/source/s/statsmodels/statsmodels-0.5.0.tar.gz"
@@ -156,7 +170,8 @@ $INSTALL_DIR/bin/easy_install ipython[all]
 # custom oracle stuff
 mkdir -p $BUILD_DIR/oracle
 pushd $BUILD_DIR/oracle
-curl -O "http://hivelocity.dl.sourceforge.net/project/cx-oracle/5.1.2/cx_Oracle-5.1.2-11g-py27-1.x86_64.rpm"
+download_package "http://hivelocity.dl.sourceforge.net/project/cx-oracle/5.1.2/cx_Oracle-5.1.2-11g-py27-1.x86_64.rpm"
+cp -f $DOWNLOAD_DIR/cx_Oracle-5.1.2-11g-py27-1.x86_64.rpm .
 rpm2cpio cx_Oracle-5.1.2-11g-py27-1.x86_64.rpm | cpio -idmv
 cp usr/lib/python2.7/site-packages/* $INSTALL_DIR/lib/python2.7/site-packages/
 popd
