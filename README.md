@@ -3,8 +3,8 @@ the parcel to a parcel repo. This script should NOT be run on a server
 where CM is installed. This script depends on the packages some os packages.
 These packages can be installed by:
 
-   yum install gcc zlib-devel readline-devel gcc-c++ openssl-devel tcl-devel tk-devel \
-  gdbm-devel db4-devel atlas-devel libpng-devel
+
+  yum install gcc zlib-devel readline-devel gcc-c++ openssl-devel tcl-devel tk-devel gdbm-devel db4-devel atlas-devel libpng-devel gcc-gfortran
 
 Users of this build of python will need at least:
 
