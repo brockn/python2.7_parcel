@@ -72,6 +72,7 @@ patch -p1 < $SRC_DIR/src/main/patch/Python-2.7.patch
 ./configure --prefix=$INSTALL_DIR
 make
 make install
+popd
 
 # steps ordered based on dependencies
 download_build "numpy-1.8.1" "http://iweb.dl.sourceforge.net/project/numpy/NumPy/1.8.1/numpy-1.8.1.tar.gz"
@@ -95,7 +96,6 @@ rpm2cpio cx_Oracle-5.1.2-11g-py27-1.x86_64.rpm | cpio -idmv
 cp usr/lib/python2.7/site-packages/* $INSTALL_DIR/lib/python2.7/site-packages/
 popd
 # Tableau
-pushd $BUILD_DIR
 tar -zxf $TABLEAU_PACKAGE
 tdeOutput=$(ls -d DataExtract*)
 tdeOutputCount=$(ls -1d DataExtract* | wc -l)
@@ -105,7 +105,6 @@ then
   exit 1
 fi
 build_package $tdeOutput
-popd
 # Sanity checks
 for dep in ${PYTHON_DEP_NAMES[@]}
 do

@@ -100,8 +100,6 @@ EXECUTED_FROM_BUILD_PARCEL=1
 # move the compiled contents to staing dir
 mv $INSTALL_DIR/* $stagingDir/
 sudo rmdir $INSTALL_DIR
-# ensure everything is owned by root in parcel
-popd
 # validate the parcel
 java -jar $CM_EXT/validator/target/validator.jar -d $parcelName/
 # create parcel
