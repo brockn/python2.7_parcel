@@ -1,4 +1,5 @@
 #!/bin/bash
+# Builds python
 
 if [[ -z "$EXECUTED_FROM_BUILD_PARCEL" ]]
 then

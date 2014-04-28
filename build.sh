@@ -17,7 +17,7 @@ NATIVE_DEPS=(gcc zlib-devel readline-devel gcc-c++ openssl-devel tcl-devel tk-de
   gdbm-devel db4-devel atlas-devel libpng-devel gcc-gfortran)
 PYTHON_DEP_NAMES=(numpy dateutil pandas scipy matplotlib pyflakes statsmodels \
   dataextract sklearn)
-# version, note that we may version the 2.7.5 python install ourselves (enable/disable modules)
+# version, note that we version the 2.7.5 python install ourselves (enable/disable modules)
 version=2.7.5.$(date +%Y%m%d.%H%M)
 # name of pracel
 parcelName=python2.7-$version
