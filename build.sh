@@ -101,7 +101,7 @@ EXECUTED_FROM_BUILD_PARCEL=1
 mv $INSTALL_DIR/* $stagingDir/
 sudo rmdir $INSTALL_DIR
 # validate the parcel
-java -jar $CM_EXT/validator/target/validator.jar -d $parcelName/
+#java -jar $CM_EXT/validator/target/validator.jar -d $parcelName/
 # create parcel
 tar -zcf ${parcelName}-${OS}.parcel --owner root --group root $parcelName/
 # install in http dir
